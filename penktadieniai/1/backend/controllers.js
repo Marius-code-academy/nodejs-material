@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid";
 import { todos } from "./db.js";
 
 export function getTodos(req, res) {
@@ -27,4 +28,19 @@ export function updateTodoById(req, res) {
   };
 
   res.json({ message: "todo updated" });
+}
+
+export function addTodo(req, res) {
+  const { title, description } = req.body;
+  const id = uuidv4();
+
+  const newTodo = {
+    id,
+    title,
+    description,
+  };
+
+  todos.push(newTodo);
+
+  res.json(newTodo);
 }
