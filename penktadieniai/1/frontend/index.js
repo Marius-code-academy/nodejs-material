@@ -1,3 +1,7 @@
+if (localStorage.getItem("loggedIn") !== "true") {
+  window.location.href = "./login.html";
+}
+
 const HOST = "http://localhost:3000/todo";
 
 const submitForm = document.querySelector("form");
