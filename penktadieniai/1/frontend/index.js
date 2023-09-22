@@ -86,6 +86,7 @@ function generateTodosHtml(todo) {
     const titleValue = title.value;
     const descriptionValue = description.value;
     try {
+      console.log(todo.id);
       const response = await fetch(HOST + `/${todo.id}`, {
         method: "PUT",
         headers: {

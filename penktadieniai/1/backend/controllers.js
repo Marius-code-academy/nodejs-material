@@ -1,25 +1,42 @@
 import { v4 as uuidv4 } from "uuid";
-import { todos } from "./db.js";
+import Todo from "./models/Todo.js";
 
-export function getTodos(req, res) {
-  res.json(todos);
+export async function getTodos(req, res) {
+  try {
+    const todos = await Todo.find({}, { __v: 0 });
+    const result = todos.map((todo) => ({
+      title: todo.title,
+      description: todo.description,
+      id: todo._id,
+    }));
+    res.json(result);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: error.message });
+  }
 }
 
-export function deleteTodoById(req, res) {
+export async function deleteTodoById(req, res) {
   const { id } = req.params;
 
-  const index = todos.findIndex((todo) => todo.id === +id);
-
-  todos.splice(index, 1);
-
-  res.json({ message: `todo with id ${id} deleted` });
+  try {
+    const todo = await Todo.findByIdAndDelete(id);
+    if (todo) {
+      res.json({ message: `todo with id ${id} deleted` });
+    } else {
+      res.status(404).json({ message: `todo with id ${id} not found` });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: error.message });
+  }
 }
 
 export function updateTodoById(req, res) {
   const { id } = req.params;
   const { title, description } = req.body;
 
-  const index = todos.findIndex((todo) => todo.id === +id);
+  const index = todos.findIndex((todo) => todo.id === id);
 
   todos[index] = {
     ...todos[index],
@@ -30,17 +47,19 @@ export function updateTodoById(req, res) {
   res.json({ message: "todo updated" });
 }
 
-export function addTodo(req, res) {
+export async function addTodo(req, res) {
   const { title, description } = req.body;
-  const id = uuidv4();
 
-  const newTodo = {
-    id,
-    title,
-    description,
-  };
+  try {
+    const newTodo = new Todo({
+      title,
+      description,
+    });
 
-  todos.push(newTodo);
+    await newTodo.save();
 
-  res.json(newTodo);
+    res.status(201).json(newTodo);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 }
