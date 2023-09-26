@@ -14,7 +14,7 @@ const PersonSchema = new mongoose.Schema({
   },
   group: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Groups",
+    ref: "Group",
   },
 });
 
